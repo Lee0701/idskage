@@ -1,7 +1,7 @@
 
 const fs = require('fs')
 const { Kage, Polygons } = require('@kurgm/kage-engine')
-const autofit = require('./autofit')
+const compose = require('./compose')
 
 const loadTsv = (file) => {
     const glypheme = Object.fromEntries(fs.readFileSync(file, 'utf8').split('\n')
@@ -21,7 +21,7 @@ const main = () => {
     const kage = new Kage()
     const { glypheme, decompose } = (dict == 0) ? loadTsv('res/buhin.tsv') : loadMock()
     Object.entries(glypheme).forEach(([name, data]) => kage.kBuhin.push(name, data))
-    const drawdgg = autofit(glypheme, decompose)
+    const drawdgg = compose(glypheme, decompose)
 
     const partframes = drawdgg(ids)
     const idsframe = partframes.map((P) => {
