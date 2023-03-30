@@ -23,12 +23,9 @@ const main = () => {
     const drawdgg = autofit(glypheme, decompose)
 
     const partframes = drawdgg(ids)
-    let idsframe = "";
-    for (var i = 0; i < partframes.length; i++) {
-        var P = partframes[i];
-        idsframe += "99:0:0:" + P.x + ":" + P.y + ":" + (P.w + P.x) + ":" + (P.h + P.y) + ":" + P.part;
-        if (i < partframes.length - 1) idsframe += "$";
-    }
+    const idsframe = partframes.map((P) => {
+        return `99:0:0:${P.x}:${P.y}:${P.w+P.x}:${P.h+P.y}:${P.part}`
+    }).join('$')
 
     const polygons = new Polygons()
     kage.kBuhin.push("ids", idsframe);

@@ -12,20 +12,20 @@ module.exports = (glypheme, decompose) => {
     }
 
     //返回組字符所需的部件
-    var getOperandByIDC = function(c) {
+    const getOperandByIDC = function(c) {
         if (c == 0x2ff2 || c == 0x2ff3) return 3;  //三元組字符
         else if (c >= 0x2ff0 && c <= 0x2fff) return 2; //二元組字符
         else return 0;
     }
     //全字框, 以小數表示。
-    var fullframe = function() {
+    const fullframe = function() {
         return { x1: 0, y1: 0, x2: 1, y2: 1 }
     };
 
     //根據組字符，產生字框，part 為第幾個部件。
     //sorry AU, 這是很naive 的implementation
-    var framebypart = function(idc, frame, part) {
-        var f = {};
+    const framebypart = function(idc, frame, part) {
+        const f = {};
         switch (idc) {
             case 0x2ff0: //⿰
                 if (0 == part) {
@@ -51,10 +51,10 @@ module.exports = (glypheme, decompose) => {
     }
 
     //可遞迴的算框
-    var fitparts = function(parent, frame) {
-        var idc = parent["ch"].charCodeAt(0);
-        var operand = getOperandByIDC(idc);
-        var i = 1;
+    const fitparts = function(parent, frame) {
+        const idc = parent["ch"].charCodeAt(0);
+        let operand = getOperandByIDC(idc);
+        let i = 1;
         while (operand > 0) {
             f = framebypart(idc, frame, i - 1);
             var child = parent["p" + i];  //中間代號
@@ -64,26 +64,26 @@ module.exports = (glypheme, decompose) => {
             i++; operand--;
         }
     }
-    var idstree = {};//a tree to hold IDS
+    const idstree = {};//a tree to hold IDS
 
-    var addchild = function(ids, parent, frame) {
-        var idc = ids.charCodeAt(0);
-        var operand = getOperandByIDC(idc);
+    const addchild = function(ids, parent, frame) {
+        const idc = ids.charCodeAt(0);
+        let operand = getOperandByIDC(idc);
 
         if (!operand) {
-            var childids = decompose[ids[0]];
+            const childids = decompose[ids[0]];
             if (childids) {
                 return addchild(childids, parent, frame);
             }
         }
         parent.ch = ids[0];
         ids = ids.substring(1, ids.length);
-        var i = 1;
+        let i = 1;
         while (operand > 0) {
             op = getOperandByIDC(ids.charCodeAt(0));
-            var f = framebypart(idc, frame, i - 1);
+            const f = framebypart(idc, frame, i - 1);
             // 產生一個中間代號
-            var child = parent["p" + i] = { "ch": ids[0] };
+            const child = parent["p" + i] = { "ch": ids[0] };
             if (op > 0) {//IDC
                 ids = addchild(ids, child, f);
                 fitparts(child, f);
@@ -103,10 +103,10 @@ module.exports = (glypheme, decompose) => {
         return ids;
     }
 
-    var drawparts = function(output, parent, x, y, w, h) {
-        var idc = parent.ch.charCodeAt(0);
-        var operand = getOperandByIDC(idc);
-        var i = 1;
+    const drawparts = function(output, parent, x, y, w, h) {
+        const idc = parent.ch.charCodeAt(0);
+        let operand = getOperandByIDC(idc);
+        let i = 1;
         while (operand > 0) {
             var child = parent["p" + i];
             op = getOperandByIDC(child.ch.charCodeAt(0));
@@ -121,9 +121,9 @@ module.exports = (glypheme, decompose) => {
             i++; operand--;
         }
     }
-    var drawdgg = function(ids) {
+    const drawdgg = function(ids) {
         addchild(ids, idstree, fullframe());
-        var output = [];
+        const output = [];
         drawparts(output, idstree, 0, 0, 200, 200); //glyphwiki max frame
         return output;
     }
