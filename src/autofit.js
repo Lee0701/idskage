@@ -56,8 +56,8 @@ module.exports = (glypheme, decompose) => {
         let operand = getOperandByIDC(idc);
         let i = 1;
         while (operand > 0) {
-            f = framebypart(idc, frame, i - 1);
-            var child = parent["p" + i];  //中間代號
+            const f = framebypart(idc, frame, i - 1);
+            const child = parent["p" + i];  //中間代號
             op = isIDC(child["ch"].charCodeAt(0));
             if (op > 0) fitparts(child, f);//又踫到 IDC，遞迴
             else child.frame = f;
@@ -108,24 +108,26 @@ module.exports = (glypheme, decompose) => {
         let operand = getOperandByIDC(idc);
         let i = 1;
         while (operand > 0) {
-            var child = parent["p" + i];
+            const child = parent["p" + i];
             op = getOperandByIDC(child.ch.charCodeAt(0));
             if (op > 0) drawparts(output, child, x, y, w, h);
             else {
-                var f = child.frame;
-                var xr = f.x2 - f.x1;
-                var yr = f.y2 - f.y1;
+                const f = child.frame;
+                const xr = f.x2 - f.x1;
+                const yr = f.y2 - f.y1;
                 //console.log(f)
                 output.push({ part: convertKey(child.ch), x: f.x1 * w, y: f.y1 * h, w: w * xr, h: h * yr });
             }
             i++; operand--;
         }
     }
+
     const drawdgg = function(ids) {
         addchild(ids, idstree, fullframe());
         const output = [];
         drawparts(output, idstree, 0, 0, 200, 200); //glyphwiki max frame
         return output;
     }
+
     return drawdgg
 }
