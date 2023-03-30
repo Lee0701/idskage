@@ -1,4 +1,11 @@
 
+//返回組字符所需的部件
+const getOperandByIDC = function(code) {
+    if(typeof code === 'string') code = code.codePointAt(0)
+    if (code == 0x2ff2 || code == 0x2ff3) return 3;  //三元組字符
+    else if (code >= 0x2ff0 && code <= 0x2fff) return 2; //二元組字符
+    else return 0;
+}
 
 //根據組字符，產生字框，part 為第幾個部件。
 //sorry AU, 這是很naive 的implementation
@@ -68,4 +75,7 @@ const frameForIDC = function(idc, frame, part) {
     return f;
 }
 
-module.exports = frameForIDC
+module.exports = {
+    getOperandByIDC,
+    frameForIDC,
+}

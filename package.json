@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@kurgm/kage-engine": "^0.4.0"
+    "@kurgm/kage-engine": "^0.4.0",
+    "canvas": "^2.11.0"
   }
 }
