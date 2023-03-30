@@ -7,6 +7,7 @@ yapcheahshen@gmail.com at MOEDICT 萌典松 2015/3/28
 
 module.exports = (glypheme, decompose) => {
 
+    // Convert unicode string to its name as being used in GlyphWiki
     const convertKey = function(ch) {
         return 'u' + ch.charCodeAt(0).toString(16).padStart(4, '0');
     }
@@ -17,33 +18,40 @@ module.exports = (glypheme, decompose) => {
         else if (c >= 0x2ff0 && c <= 0x2fff) return 2; //二元組字符
         else return 0;
     }
+
     //全字框, 以小數表示。
     const fullframe = function() {
-        return { x1: 0, y1: 0, x2: 1, y2: 1 }
+        return {
+            p1 : {x: 0, y: 0},
+            p2 : {x: 1, y: 1},
+        }
     };
 
     //根據組字符，產生字框，part 為第幾個部件。
     //sorry AU, 這是很naive 的implementation
     const framebypart = function(idc, frame, part) {
-        const f = {};
+        const { p1, p2 } = frame
+        const f = {
+            p1 : {x: 0, y: 0},
+            p2 : {x: 1, y: 1},
+        }
         switch (idc) {
-            case 0x2ff0: //⿰
+            case 0x2ff0: // ⿰
                 if (0 == part) {
-
-                    f.x1 = frame.x1; f.y1 = frame.y1;
-                    f.x2 = (frame.x2 - frame.x1) / 2; f.y2 = frame.y2;
+                    f.p1.x = p1.x; f.p1.y = p1.y;
+                    f.p2.x = (p2.x - p1.x) / 2; f.p2.y = p2.y;
                 } else {
-                    f.x1 = (frame.x2 - frame.x1) / 2.5; f.y1 = frame.y1;
-                    f.x2 = frame.x2; f.y2 = frame.y2;
+                    f.p1.x = (p2.x - p1.x) / 2.5; f.p1.y = p1.y;
+                    f.p2.x = p2.x; f.p2.y = p2.y;
                 }
                 break;
-            case 0x2ff1: //⿱
+            case 0x2ff1: // ⿱
                 if (0 == part) {
-                    f.x1 = frame.x1; f.y1 = frame.y1;
-                    f.x2 = frame.x2; f.y2 = (frame.y2 - frame.y1) / 2;
+                    f.p1.x = p1.x; f.p1.y = p1.y;
+                    f.p2.x = p2.x; f.p2.y = (p2.y - p1.y) / 2;
                 } else {
-                    f.x1 = frame.x1; f.y1 = (frame.y2 - frame.y1) / 2.5;
-                    f.x2 = frame.x2; f.y2 = frame.y2;
+                    f.p1.x = p1.x; f.p1.y = (p2.y - p1.y) / 2.5;
+                    f.p2.x = p2.x; f.p2.y = p2.y;
                 }
                 break;
         }
@@ -113,10 +121,10 @@ module.exports = (glypheme, decompose) => {
             if (op > 0) drawparts(output, child, x, y, w, h);
             else {
                 const f = child.frame;
-                const xr = f.x2 - f.x1;
-                const yr = f.y2 - f.y1;
+                const xr = f.p2.x - f.p1.x;
+                const yr = f.p2.y - f.p1.y;
                 //console.log(f)
-                output.push({ part: convertKey(child.ch), x: f.x1 * w, y: f.y1 * h, w: w * xr, h: h * yr });
+                output.push({ part: convertKey(child.ch), x: f.p1.x * w, y: f.p1.y * h, w: w * xr, h: h * yr });
             }
             i++; operand--;
         }
