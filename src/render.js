@@ -47,4 +47,4 @@ var drawglyph = function(ids, size) {
         ctx.fill();
     }
 }
-window.drawglyph = drawglyph;
+module.exports = drawglyph
