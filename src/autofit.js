@@ -64,6 +64,38 @@ module.exports = (glypheme, decompose) => {
                     f.p2.y = p2.y
                 }
                 break;
+            case 0x2ff2: // ⿲
+                if (part == 0) {
+                    f.p1.x = p1.x
+                    f.p1.y = p1.y
+                    f.p2.x = (p2.x - p1.x) / 2
+                    f.p2.y = p2.y
+                } else if(part == 1) {
+                    f.p1.x = (p2.x - p1.x) / 2.5
+                    f.p1.y = p1.y
+                    f.p2.x = p2.x
+                    f.p2.y = p2.y
+                } else {
+                }
+                break;
+            case 0x2ff3: // ⿳
+                if (part == 0) {
+                    f.p1.x = p1.x
+                    f.p1.y = p1.y
+                    f.p2.x = p2.x
+                    f.p2.y = (p2.y - p1.y) / 3
+                } else if(part == 1) {
+                    f.p1.x = p1.x
+                    f.p1.y = (p2.y - p1.y) / 3
+                    f.p2.x = p2.x
+                    f.p2.y = (p2.y - p1.y) / 3 * 2
+                } else {
+                    f.p1.x = p1.x
+                    f.p1.y = (p2.y - p1.y) / 3 * 2
+                    f.p2.x = p2.x
+                    f.p2.y = p2.y
+                }
+                break;
         }
         return f;
     }
