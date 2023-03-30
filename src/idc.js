@@ -1,10 +1,20 @@
 
 //返回組字符所需的部件
-const getOperandByIDC = function(code) {
-    if(typeof code === 'string') code = code.codePointAt(0)
-    if (code == 0x2ff2 || code == 0x2ff3) return 3;  //三元組字符
-    else if (code >= 0x2ff0 && code <= 0x2fff) return 2; //二元組字符
+const getOperandByIDC = function(idc) {
+    if(typeof idc === 'string') idc = idc.codePointAt(0)
+    if(idc == 0x2ff2 || idc == 0x2ff3) return 3;  //三元組字符
+    else if(idc >= 0x2ff0 && idc <= 0x2fff) return 2; //二元組字符
     else return 0;
+}
+
+const suffixForIDC = function(idc, part) {
+    if(typeof idc === 'string') idc = idc.codePointAt(0)
+    if(idc == 0x2ff2 || idc == 0x2ff3) {
+        return (part < 2) ? '-01' : '-02'
+    } else if(idc == 0x2ff0 || idc <= 0x2ff1) {
+        return (part == 0) ? '-01' : '-02'
+    }
+    return ''
 }
 
 //根據組字符，產生字框，part 為第幾個部件。
@@ -18,7 +28,7 @@ const frameForIDC = function(idc, frame, part) {
     }
     switch (idc) {
         case 0x2ff0: // ⿰
-            if (part == 0) {
+            if(part == 0) {
                 f.p1 = p1
                 f.p2.x = (p2.x - p1.x) / 2
                 f.p2.y = p2.y
@@ -29,7 +39,7 @@ const frameForIDC = function(idc, frame, part) {
             }
             break;
         case 0x2ff1: // ⿱
-            if (part == 0) {
+            if(part == 0) {
                 f.p1 = p1
                 f.p2.x = p2.x
                 f.p2.y = (p2.y - p1.y) / 2
@@ -40,7 +50,7 @@ const frameForIDC = function(idc, frame, part) {
             }
             break;
         case 0x2ff2: // ⿲
-            if (part == 0) {
+            if(part == 0) {
                 f.p1 = p1
                 f.p2.x = (p2.x - p1.x) / 3
                 f.p2.y = p2.y
@@ -56,7 +66,7 @@ const frameForIDC = function(idc, frame, part) {
             }
             break;
         case 0x2ff3: // ⿳
-            if (part == 0) {
+            if(part == 0) {
                 f.p1 = p1
                 f.p2.x = p2.x
                 f.p2.y = (p2.y - p1.y) / 3
@@ -78,4 +88,5 @@ const frameForIDC = function(idc, frame, part) {
 module.exports = {
     getOperandByIDC,
     frameForIDC,
+    suffixForIDC,
 }

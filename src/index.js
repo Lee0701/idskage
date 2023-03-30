@@ -3,11 +3,12 @@ const fs = require('fs')
 const { Kage, Polygons } = require('@kurgm/kage-engine')
 const { createCanvas } = require('canvas')
 const compose = require('./compose')
+const autofit = require('./autofit')
 
 const loadTsv = (file) => {
     const glypheme = Object.fromEntries(fs.readFileSync(file, 'utf8').split('\n')
             .map((line) => line.split('\t'))
-            .map(([name, related, data])     => [name, data]))
+            .map(([name, related, data]) => [name, data]))
     const decompose = {}
     return { glypheme, decompose }
 }
@@ -54,7 +55,16 @@ const main = () => {
     const kage = new Kage()
     const { glypheme, decompose } = (dict == 0) ? loadTsv('res/buhin.tsv') : loadMock()
     Object.entries(glypheme).forEach(([name, data]) => kage.kBuhin.push(name, data))
-    const drawdgg = compose(glypheme, decompose)
+    const buildTree = compose(glypheme, decompose)
+    const drawParts = autofit(kage)
+
+    const drawdgg = function(ids) {
+        const idsTree = buildTree(ids) // a tree to hold IDS sequence
+        const pos = { x: 0, y: 0 }
+        const size = { w: 200, h: 200 } // glyphwiki max frame size
+        const output = drawParts(idsTree, pos, size)
+        return output
+    }
 
     const partframes = drawdgg(ids)
     const idsframe = partframes.map((P) => {
