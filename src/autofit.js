@@ -18,7 +18,7 @@ var fullframe=function(){
 
 //根據組字符，產生字框，part 為第幾個部件。
 //sorry AU, 這是很naive 的implementation
-var framebypart=function (idc,frame,part) {
+var framebypart=function(idc,frame,part) {
 	var f={};
 	switch (idc) {
 		case 0x2ff0: //⿰
@@ -49,7 +49,7 @@ var fitparts=function(parent,frame) {
 	var idc=parent["ch"].charCodeAt(0);
 	var operand=getOperandByIDC(idc);
 	var i=1;
-	while (operand>0) {
+	while(operand>0) {
 		f=framebypart(idc,frame,i-1);
 		var child=parent["p"+i];  //中間代號
 		op=isIDC(child["ch"].charCodeAt(0));
@@ -60,7 +60,7 @@ var fitparts=function(parent,frame) {
 }
 var idstree={};//a tree to hold IDS
 
-var addchild=function (ids,parent,frame)   {
+var addchild=function(ids,parent,frame)   {
 	var idc=ids.charCodeAt(0);
 	var operand=getOperandByIDC(idc);
 	
@@ -73,7 +73,7 @@ var addchild=function (ids,parent,frame)   {
 	parent.ch=ids[0];
 	ids=ids.substring(1,ids.length);
 	var i=1;
-	while (operand>0) {
+	while(operand>0) {
 		op=getOperandByIDC(ids.charCodeAt(0));
 		var f=framebypart(idc,frame,i-1);
 		// 產生一個中間代號
@@ -101,7 +101,7 @@ var drawparts=function(output,parent, x,y,w,h) {
 	var idc=parent.ch.charCodeAt(0);
 	var operand=getOperandByIDC(idc);
 	var i=1;
-	while (operand>0) {
+	while(operand>0) {
 		var child=parent["p"+i];
 		op=getOperandByIDC(child.ch.charCodeAt(0));
 		if (op>0) drawparts(output,child, x,y,w,h);
