@@ -25,7 +25,7 @@ const main = () => {
 
     const partframes = drawdgg(ids)
     const idsframe = partframes.map((P) => {
-        return `99:0:0:${P.x}:${P.y}:${P.w+P.x}:${P.h+P.y}:${P.part}`
+        return `99:0:0:${P.x}:${P.y}:${P.w+P.x}:${P.h+P.y}:${P.name}`
     }).join('$')
 
     const polygons = new Polygons()

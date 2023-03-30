@@ -15,14 +15,15 @@ module.exports = (glypheme, decompose) => {
     }
 
     //返回組字符所需的部件
-    const getOperandByIDC = function(c) {
-        if (c == 0x2ff2 || c == 0x2ff3) return 3;  //三元組字符
-        else if (c >= 0x2ff0 && c <= 0x2fff) return 2; //二元組字符
+    const getOperandByIDC = function(code) {
+        if(typeof code === 'string') code = code.codePointAt(0)
+        if (code == 0x2ff2 || code == 0x2ff3) return 3;  //三元組字符
+        else if (code >= 0x2ff0 && code <= 0x2fff) return 2; //二元組字符
         else return 0;
     }
 
     //全字框, 以小數表示。
-    const fullframe = function() {
+    const fullFrame = function() {
         return {
             p1 : {x: 0, y: 0},
             p2 : {x: 1, y: 1},
@@ -32,6 +33,7 @@ module.exports = (glypheme, decompose) => {
     //根據組字符，產生字框，part 為第幾個部件。
     //sorry AU, 這是很naive 的implementation
     const framebypart = function(idc, frame, part) {
+        if(typeof idc === 'string') idc = idc.codePointAt(0)
         const { p1, p2 } = frame
         const f = {
             p1 : {x: 0, y: 0},
@@ -106,70 +108,60 @@ module.exports = (glypheme, decompose) => {
         const operands = getOperandByIDC(idc);
         new Array(operands).fill().map((_, i) => {
             const f = framebypart(idc, frame, i);
-            const child = parent["p" + (i + 1)];  //中間代號
+            const child = parent['p' + i];  //中間代號
             const op = getOperandByIDC(child["ch"].codePointAt(0));
             if (op > 0) fitparts(child, f);//又踫到 IDC，遞迴
             else child.frame = f;
         })
     }
 
-    const addchild = function(ids, parent, frame) {
-        const idc = ids.codePointAt(0);
-        const operands = getOperandByIDC(idc);
-
-        if (!operands) {
-            const childids = decompose[fixedCharAt(ids, 0)];
-            if (childids) {
-                return addchild(childids, parent, frame);
+    const buildTree = (ids) => {
+        const recursive = (ids, frame) => {
+            const ch = fixedCharAt(ids, 0)
+            const operands = getOperandByIDC(ch)
+            if(operands == 0) {
+                return [{ ch, frame }, ch.length]
+            } else {
+                let index = 1
+                const children = new Array(operands).fill().map((_, i) => {
+                    const f = framebypart(ch, frame, i)
+                    const [childTree, j] = recursive(ids.slice(index), f)
+                    index += j
+                    return ['p' + i, childTree]
+                })
+                const childrenTree = Object.fromEntries(children)
+                return [{ ch, ...childrenTree }, index]
             }
         }
-        parent.ch = fixedCharAt(ids, 0);
-        ids = ids.substring(parent.ch.length, ids.length);
-        new Array(operands).fill().forEach((_, i) => {
-            const op = getOperandByIDC(ids.codePointAt(0));
-            const f = framebypart(idc, frame, i);
-            // 產生一個中間代號
-            const ch = fixedCharAt(ids, 0)
-            const child = parent["p" + (i + 1)] = { "ch": ch };
-            if (op > 0) {//IDC
-                ids = addchild(ids, child, f);
-                fitparts(child, f);
-            } else { //normal characters
-                if (glypheme[convertKey(ch)]) { //it is a part
-                    //這裡有點問題
-                } else { //try IDS
-                    childids = decompose[convertKey(ch)]; //看看這個部件是否有 IDS
-                    ids = addchild(childids, child, f); //遞迴組字
-                }
-
-                ids = ids.substring(ch.length, ids.length); // consume first char
-                child.frame = f;
-            }
-        })
-        return ids;
+        return recursive(ids, fullFrame())[0]
     }
 
-    const drawparts = function(output, parent, x, y, w, h) {
-        const idc = parent.ch.codePointAt(0);
-        const operands = getOperandByIDC(idc);
-        new Array(operands).fill().forEach((_ ,i) => {
-            const child = parent["p" + (i + 1)];
-            op = getOperandByIDC(child.ch.codePointAt(0));
-            if (op > 0) drawparts(output, child, x, y, w, h);
-            else {
-                const f = child.frame;
-                const xr = f.p2.x - f.p1.x;
-                const yr = f.p2.y - f.p1.y;
-                output.push({ part: convertKey(child.ch), x: f.p1.x * w, y: f.p1.y * h, w: w * xr, h: h * yr });
+    const drawParts = (tree, pos, size) => {
+        const idc = tree.ch.codePointAt(0)
+        const operands = getOperandByIDC(idc)
+        return new Array(operands).fill().flatMap((_ ,i) => {
+            const child = tree['p' + i]
+            const op = getOperandByIDC(child.ch.codePointAt(0))
+            if (op > 0) {
+                return drawParts(child, pos, size)
+            } else {
+                const frame = child.frame
+                const x = frame.p1.x * size.w
+                const y = frame.p1.y * size.h
+                const xr = frame.p2.x - frame.p1.x
+                const yr = frame.p2.y - frame.p1.y
+                const w = size.w * xr
+                const h = size.h * yr
+                return [{ name: convertKey(child.ch), x, y, w, h }]
             }
         })
     }
 
     const drawdgg = function(ids) {
-        const idstree = {} // a tree to hold IDS
-        addchild(ids, idstree, fullframe())
-        const output = []
-        drawparts(output, idstree, 0, 0, 200, 200) //glyphwiki max frame size
+        const idsTree = buildTree(ids) // a tree to hold IDS sequence
+        const pos = { x: 0, y: 0 }
+        const size = { w: 200, h: 200 }
+        const output = drawParts(idsTree, pos, size) // glyphwiki max frame size
         return output
     }
 
