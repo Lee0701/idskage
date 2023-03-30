@@ -103,22 +103,19 @@ module.exports = (glypheme, decompose) => {
     //可遞迴的算框
     const fitparts = function(parent, frame) {
         const idc = parent["ch"].codePointAt(0);
-        let operand = getOperandByIDC(idc);
-        let i = 1;
-        while (operand > 0) {
-            const f = framebypart(idc, frame, i - 1);
-            const child = parent["p" + i];  //中間代號
+        const operand = getOperandByIDC(idc);
+        new Array(operand).fill().map((_, i) => {
+            const f = framebypart(idc, frame, i);
+            const child = parent["p" + (i + 1)];  //中間代號
             op = isIDC(child["ch"].codePointAt(0));
             if (op > 0) fitparts(child, f);//又踫到 IDC，遞迴
             else child.frame = f;
-            i++; operand--;
-        }
+        })
     }
-    const idstree = {};//a tree to hold IDS
 
     const addchild = function(ids, parent, frame) {
         const idc = ids.codePointAt(0);
-        let operand = getOperandByIDC(idc);
+        const operand = getOperandByIDC(idc);
 
         if (!operand) {
             const childids = decompose[fixedCharAt(ids, 0)];
@@ -128,13 +125,12 @@ module.exports = (glypheme, decompose) => {
         }
         parent.ch = fixedCharAt(ids, 0);
         ids = ids.substring(parent.ch.length, ids.length);
-        let i = 1;
-        while (operand > 0) {
-            op = getOperandByIDC(ids.codePointAt(0));
-            const f = framebypart(idc, frame, i - 1);
+        new Array(operand).fill().forEach((_, i) => {
+            const op = getOperandByIDC(ids.codePointAt(0));
+            const f = framebypart(idc, frame, i);
             // 產生一個中間代號
             const ch = fixedCharAt(ids, 0)
-            const child = parent["p" + i] = { "ch": ch };
+            const child = parent["p" + (i + 1)] = { "ch": ch };
             if (op > 0) {//IDC
                 ids = addchild(ids, child, f);
                 fitparts(child, f);
@@ -149,8 +145,7 @@ module.exports = (glypheme, decompose) => {
                 ids = ids.substring(ch.length, ids.length); // consume first char
                 child.frame = f;
             }
-            i++; operand--;
-        }
+        })
         return ids;
     }
 
@@ -173,10 +168,11 @@ module.exports = (glypheme, decompose) => {
     }
 
     const drawdgg = function(ids) {
-        addchild(ids, idstree, fullframe());
-        const output = [];
-        drawparts(output, idstree, 0, 0, 200, 200); //glyphwiki max frame
-        return output;
+        const idstree = {} // a tree to hold IDS
+        addchild(ids, idstree, fullframe())
+        const output = []
+        drawparts(output, idstree, 0, 0, 200, 200) //glyphwiki max frame size
+        return output
     }
 
     return drawdgg
