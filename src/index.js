@@ -16,9 +16,10 @@ const loadMock = () => {
 
 const main = () => {
     const ids = process.argv[2]
+    const dict = parseInt(process.argv[3] || '0')
 
     const kage = new Kage()
-    const { glypheme, decompose } = loadTsv('res/buhin.tsv')
+    const { glypheme, decompose } = (dict == 0) ? loadTsv('res/buhin.tsv') : loadMock()
     Object.entries(glypheme).forEach(([name, data]) => kage.kBuhin.push(name, data))
     const drawdgg = autofit(glypheme, decompose)
 
