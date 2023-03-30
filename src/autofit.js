@@ -107,7 +107,7 @@ module.exports = (glypheme, decompose) => {
         new Array(operand).fill().map((_, i) => {
             const f = framebypart(idc, frame, i);
             const child = parent["p" + (i + 1)];  //中間代號
-            op = isIDC(child["ch"].codePointAt(0));
+            const op = getOperandByIDC(child["ch"].codePointAt(0));
             if (op > 0) fitparts(child, f);//又踫到 IDC，遞迴
             else child.frame = f;
         })
