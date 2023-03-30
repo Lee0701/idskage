@@ -103,8 +103,8 @@ module.exports = (glypheme, decompose) => {
     //可遞迴的算框
     const fitparts = function(parent, frame) {
         const idc = parent["ch"].codePointAt(0);
-        const operand = getOperandByIDC(idc);
-        new Array(operand).fill().map((_, i) => {
+        const operands = getOperandByIDC(idc);
+        new Array(operands).fill().map((_, i) => {
             const f = framebypart(idc, frame, i);
             const child = parent["p" + (i + 1)];  //中間代號
             const op = getOperandByIDC(child["ch"].codePointAt(0));
@@ -115,9 +115,9 @@ module.exports = (glypheme, decompose) => {
 
     const addchild = function(ids, parent, frame) {
         const idc = ids.codePointAt(0);
-        const operand = getOperandByIDC(idc);
+        const operands = getOperandByIDC(idc);
 
-        if (!operand) {
+        if (!operands) {
             const childids = decompose[fixedCharAt(ids, 0)];
             if (childids) {
                 return addchild(childids, parent, frame);
@@ -125,7 +125,7 @@ module.exports = (glypheme, decompose) => {
         }
         parent.ch = fixedCharAt(ids, 0);
         ids = ids.substring(parent.ch.length, ids.length);
-        new Array(operand).fill().forEach((_, i) => {
+        new Array(operands).fill().forEach((_, i) => {
             const op = getOperandByIDC(ids.codePointAt(0));
             const f = framebypart(idc, frame, i);
             // 產生一個中間代號
@@ -151,10 +151,9 @@ module.exports = (glypheme, decompose) => {
 
     const drawparts = function(output, parent, x, y, w, h) {
         const idc = parent.ch.codePointAt(0);
-        let operand = getOperandByIDC(idc);
-        let i = 1;
-        while (operand > 0) {
-            const child = parent["p" + i];
+        const operands = getOperandByIDC(idc);
+        new Array(operands).fill().forEach((_ ,i) => {
+            const child = parent["p" + (i + 1)];
             op = getOperandByIDC(child.ch.codePointAt(0));
             if (op > 0) drawparts(output, child, x, y, w, h);
             else {
@@ -163,8 +162,7 @@ module.exports = (glypheme, decompose) => {
                 const yr = f.p2.y - f.p1.y;
                 output.push({ part: convertKey(child.ch), x: f.p1.x * w, y: f.p1.y * h, w: w * xr, h: h * yr });
             }
-            i++; operand--;
-        }
+        })
     }
 
     const drawdgg = function(ids) {
