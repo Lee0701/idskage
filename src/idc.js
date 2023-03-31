@@ -2,9 +2,9 @@
 //返回組字符所需的部件
 const getOperandByIDC = function(idc) {
     if(typeof idc === 'string') idc = idc.codePointAt(0)
-    if(idc == 0x2ff2 || idc == 0x2ff3) return 3;  //三元組字符
-    else if(idc >= 0x2ff0 && idc <= 0x2fff) return 2; //二元組字符
-    else return 0;
+    if(idc == 0x2ff2 || idc == 0x2ff3) return 3  //三元組字符
+    else if(idc >= 0x2ff0 && idc <= 0x2fff) return 2 //二元組字符
+    else return 0
 }
 
 const suffixForIDC = function(idc, part) {
@@ -37,7 +37,8 @@ const frameForIDC = function(idc, frame, part) {
                 f.p1.y = p1.y
                 f.p2 = p2
             }
-            break;
+            break
+
         case 0x2ff1: // ⿱
             if(part == 0) {
                 f.p1 = p1
@@ -48,7 +49,8 @@ const frameForIDC = function(idc, frame, part) {
                 f.p1.y = (p2.y - p1.y) / 2.5
                 f.p2 = p2
             }
-            break;
+            break
+
         case 0x2ff2: // ⿲
             if(part == 0) {
                 f.p1 = p1
@@ -64,7 +66,8 @@ const frameForIDC = function(idc, frame, part) {
                 f.p1.y = p1.y
                 f.p2 = p2
             }
-            break;
+            break
+
         case 0x2ff3: // ⿳
             if(part == 0) {
                 f.p1 = p1
@@ -80,9 +83,9 @@ const frameForIDC = function(idc, frame, part) {
                 f.p1.y = (p2.y - p1.y) / 3 * 2
                 f.p2 = p2
             }
-            break;
+            break
     }
-    return f;
+    return f
 }
 
 module.exports = {

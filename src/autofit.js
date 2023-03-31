@@ -1,4 +1,5 @@
 
+const { Polygons } = require('@kurgm/kage-engine')
 const { getOperandByIDC, frameForIDC, suffixForIDC } = require('./idc')
 
 const autofit = (kage) => {
@@ -6,6 +7,27 @@ const autofit = (kage) => {
     // Convert unicode string to its name as being used in GlyphWiki
     const convertKey = (ch) => {
         return 'u' + ch.codePointAt(0).toString(16).padStart(4, '0');
+    }
+
+    const getBoundingBox = (name, size) => {
+        const polygons = new Polygons()
+        kage.makeGlyph(polygons, name)
+        const points = polygons.array.flatMap((polygon) => {
+            return polygon.array.map((point) => {
+                const { x, y } = point
+                return { x, y }
+            })
+        })
+        const { w, h } = size
+        const minX = Math.min(...points.map((p) => p.x)) / w
+        const minY = Math.min(...points.map((p) => p.y)) / h
+        const maxX = Math.max(...points.map((p) => p.x)) / w
+        const maxY = Math.max(...points.map((p) => p.y)) / h
+        return { minX, minY, maxX, maxY }
+    }
+
+    const applyFrame = (frame, pos, size) => {
+        const x = pos.x
     }
 
     //可遞迴的算框
@@ -30,14 +52,36 @@ const autofit = (kage) => {
             if (op > 0) {
                 return fixPartFrames(child, pos, size)
             } else {
+                // const name = convertKey(child.ch) + suffixForIDC(idc, i)
+                const name = convertKey(child.ch)
+                const { minX, minY, maxX, maxY } = getBoundingBox(name, size)
                 const frame = child.frame
-                const x = frame.p1.x * size.w
-                const y = frame.p1.y * size.h
-                const xr = frame.p2.x - frame.p1.x
-                const yr = frame.p2.y - frame.p1.y
-                const w = size.w * xr
-                const h = size.h * yr
-                const name = convertKey(child.ch) + suffixForIDC(idc, i)
+
+                // Offset
+                const lo = -minX
+                const ro = 1 - maxX
+                const to = -minY
+                const bo = 1 - maxY
+                
+                // Margin
+                const margin = 0.01
+                const lm = margin
+                const rm = margin
+                const tm = margin
+                const bm = margin
+
+                const x1 = (frame.p1.x + lo) + lm
+                const y1 = (frame.p1.y + to) + tm
+                const x2 = (frame.p2.x + ro) - rm
+                const y2 = (frame.p2.y + bo) - bm
+
+                const xr = x2 - x1
+                const yr = y2 - y1
+                const x = x1 * size.w
+                const y = y1 * size.h
+                const w = xr * size.w
+                const h = yr * size.h
+
                 return [{ name, x, y, w, h }]
             }
         })

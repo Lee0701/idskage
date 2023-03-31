@@ -56,13 +56,13 @@ const main = () => {
     const { glypheme, decompose } = (dict == 0) ? loadTsv('res/buhin.tsv') : loadMock()
     Object.entries(glypheme).forEach(([name, data]) => kage.kBuhin.push(name, data))
     const buildTree = compose(glypheme, decompose)
-    const drawParts = autofit(kage)
+    const fixPartFrames = autofit(kage)
 
     const drawdgg = function(ids) {
         const idsTree = buildTree(ids) // a tree to hold IDS sequence
         const pos = { x: 0, y: 0 }
         const size = { w: 200, h: 200 } // glyphwiki max frame size
-        const output = drawParts(idsTree, pos, size)
+        const output = fixPartFrames(idsTree, pos, size)
         return output
     }
 
@@ -72,8 +72,8 @@ const main = () => {
     }).join('$')
 
     const polygons = new Polygons()
-    kage.kBuhin.push("ids", idsframe);
-    kage.makeGlyph(polygons, "ids");
+    kage.kBuhin.push("ids", idsframe)
+    kage.makeGlyph(polygons, "ids")
 
     if(outFile.endsWith('.svg')) drawSVG(outFile, polygons)
     else drawPNG(outFile, polygons)
