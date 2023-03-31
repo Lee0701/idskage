@@ -9,6 +9,14 @@ const autofit = (kage) => {
         return 'u' + ch.codePointAt(0).toString(16).padStart(4, '0');
     }
 
+    const getKey = (ch, idc, index) => {
+        const name = convertKey(ch)
+        const suffix = suffixForIDC(idc, index)
+        const suffixExists = kage.kBuhin.hash[name + suffix] !== undefined
+        if(suffixExists) return name + suffix
+        else return name
+    }
+
     const getBoundingBox = (name, size) => {
         const polygons = new Polygons()
         kage.makeGlyph(polygons, name)
@@ -24,10 +32,6 @@ const autofit = (kage) => {
         const maxX = Math.max(...points.map((p) => p.x)) / w
         const maxY = Math.max(...points.map((p) => p.y)) / h
         return { minX, minY, maxX, maxY }
-    }
-
-    const applyFrame = (frame, pos, size) => {
-        const x = pos.x
     }
 
     //可遞迴的算框
@@ -52,8 +56,7 @@ const autofit = (kage) => {
             if (op > 0) {
                 return fixPartFrames(child, pos, size)
             } else {
-                // const name = convertKey(child.ch) + suffixForIDC(idc, i)
-                const name = convertKey(child.ch)
+                const name = getKey(child.ch, idc, i)
                 const { minX, minY, maxX, maxY } = getBoundingBox(name, size)
                 const frame = child.frame
 
@@ -64,7 +67,7 @@ const autofit = (kage) => {
                 const bo = 1 - maxY
                 
                 // Margin
-                const margin = 0.01
+                const margin = 0.025
                 const lm = margin
                 const rm = margin
                 const tm = margin
