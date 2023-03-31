@@ -23,8 +23,8 @@ const frameForIDC = function(idc, frame, part) {
     if(typeof idc === 'string') idc = idc.codePointAt(0)
     const { p1, p2 } = frame
     const f = {
-        p1 : {x: 0, y: 0},
-        p2 : {x: 1, y: 1},
+        p1: { x: 0, y: 0 },
+        p2: { x: 1, y: 1 },
     }
     switch (idc) {
         case 0x2ff0: // ⿰
@@ -33,7 +33,7 @@ const frameForIDC = function(idc, frame, part) {
                 f.p2.x = (p2.x - p1.x) / 2
                 f.p2.y = p2.y
             } else {
-                f.p1.x = (p2.x - p1.x) / 2.5
+                f.p1.x = (p2.x - p1.x) / 2
                 f.p1.y = p1.y
                 f.p2 = p2
             }
@@ -46,7 +46,7 @@ const frameForIDC = function(idc, frame, part) {
                 f.p2.y = (p2.y - p1.y) / 2
             } else {
                 f.p1.x = p1.x
-                f.p1.y = (p2.y - p1.y) / 2.5
+                f.p1.y = (p2.y - p1.y) / 2
                 f.p2 = p2
             }
             break
@@ -90,11 +90,12 @@ const frameForIDC = function(idc, frame, part) {
                 f.p1 = p1
                 f.p2 = p2
             } else {
-                const gap = 0.1
-                f.p1.x = p1.x + gap
-                f.p1.y = p1.y + gap
-                f.p2.x = (p1.x + p2.x) - gap
-                f.p2.y = (p1.y + p2.y) - gap
+                const gapX = 0.1
+                const gapY = 0.0625
+                f.p1.x = p1.x + gapX
+                f.p1.y = p1.y + gapY
+                f.p2.x = p2.x - gapX
+                f.p2.y = p2.y - gapY
             }
             break
 
@@ -103,11 +104,12 @@ const frameForIDC = function(idc, frame, part) {
             f.p1 = p1
             f.p2 = p2
         } else {
-            const gap = 0.1
-            f.p1.x = p1.x + gap
-            f.p1.y = p1.y + gap
-            f.p2.x = (p1.x + p2.x) - gap
-            f.p2.y = (p1.y + p2.y)
+            const gapX = 0.1
+            const gapY = 0.0625
+            f.p1.x = p1.x + gapX
+            f.p1.y = p1.y + gapY
+            f.p2.x = p2.x - gapX
+            f.p2.y = p2.y
         }
         break
 
@@ -116,11 +118,12 @@ const frameForIDC = function(idc, frame, part) {
                 f.p1 = p1
                 f.p2 = p2
             } else {
-                const gap = 0.1
-                f.p1.x = p1.x + gap
+                const gapX = 0.1
+                const gapY = 0.0625
+                f.p1.x = p1.x + gapX
                 f.p1.y = p1.y
-                f.p2.x = (p1.x + p2.x) - gap
-                f.p2.y = (p1.y + p2.y) - gap
+                f.p2.x = p2.x - gapX
+                f.p2.y = p2.y - gapY
             }
             break
 
@@ -129,11 +132,64 @@ const frameForIDC = function(idc, frame, part) {
             f.p1 = p1
             f.p2 = p2
         } else {
-            const gap = 0.1
-            f.p1.x = p1.x + gap
-            f.p1.y = p1.y + gap
-            f.p2.x = (p1.x + p2.x)
-            f.p2.y = (p1.y + p2.y) - gap
+            const gapX = 0.1
+            const gapY = 0.0625
+            f.p1.x = p1.x + gapX
+            f.p1.y = p1.y + gapY
+            f.p2.x = p2.x
+            f.p2.y = p2.y - gapY
+        }
+        break
+
+        case 0x2ff8: // ⿸
+        if(part == 0) {
+            f.p1 = p1
+            f.p2 = p2
+        } else {
+            const gapX = 0.1
+            const gapY = 0.0625
+            f.p1.x = p1.x + gapX
+            f.p1.y = p1.y + gapY
+            f.p2.x = p2.x
+            f.p2.y = p2.y
+        }
+        break
+
+        case 0x2ff9: // ⿹
+        if(part == 0) {
+            f.p1 = p1
+            f.p2 = p2
+        } else {
+            const gapX = 0.1
+            const gapY = 0.0625
+            f.p1.x = p1.x
+            f.p1.y = p1.y + gapY
+            f.p2.x = p2.x - gapX
+            f.p2.y = p2.y
+        }
+        break
+
+        case 0x2ffa: // ⿺
+        if(part == 0) {
+            f.p1 = p1
+            f.p2 = p2
+        } else {
+            const gapX = 0.1
+            const gapY = 0.0625
+            f.p1.x = p1.x + gapX
+            f.p1.y = p1.y
+            f.p2.x = p2.x
+            f.p2.y = p2.y - gapY
+        }
+        break
+
+        case 0x2ff7b: // ⿻
+        if(part == 0) {
+            f.p1 = p1
+            f.p2 = p2
+        } else {
+            f.p1 = p1
+            f.p2 = p2
         }
         break
     }

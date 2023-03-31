@@ -47,16 +47,16 @@ const autofit = (kage) => {
         })
     }
 
-    const fixPartFrames = (tree, pos, size, i=0) => {
-        const idc = tree.ch.codePointAt(0)
-        const operands = getOperandByIDC(idc)
+    const fixPartFrames = (tree, pos, size, idc='', index=0) => {
+        const ch = tree.ch.codePointAt(0)
+        const operands = getOperandByIDC(ch)
         if(operands > 0) {
             return new Array(operands).fill().flatMap((_, i) => {
                 const child = tree['p' + i]
-                return fixPartFrames(child, pos, size, i)
+                return fixPartFrames(child, pos, size, ch, i)
             })
         } else {
-            const name = getKey(tree.ch, idc, i)
+            const name = getKey(tree.ch, idc, index)
             const { minX, minY, maxX, maxY } = getBoundingBox(name, size)
             const frame = tree.frame
 
@@ -67,7 +67,7 @@ const autofit = (kage) => {
             const bo = 1 - maxY
 
             // Margin
-            const margin = 0.025
+            const margin = 0.05
             const lm = margin
             const rm = margin
             const tm = margin

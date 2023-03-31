@@ -22,14 +22,14 @@ const drawPNG = (outFile, polygons) => {
     const ctx = canvas.getContext('2d')
 
     //clear canvas
-    ctx.fillStyle = "rgb(255, 255, 255)"
+    ctx.fillStyle = "white"
     ctx.fillRect(0, 0, size, size)
 
     //kage 的精度為 200x200 ，轉換為 target canvas size
     rx = size / 200
     ry = size / 200
 
-    ctx.fillStyle = "rgb(0, 0, 0)"
+    ctx.fillStyle = "black"
     //繪製canvas, 這裡可改為輸出 svg
     for(var i = 0; i < polygons.array.length; i++) {
         ctx.beginPath()
