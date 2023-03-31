@@ -84,6 +84,58 @@ const frameForIDC = function(idc, frame, part) {
                 f.p2 = p2
             }
             break
+
+        case 0x2ff4: // ⿴
+            if(part == 0) {
+                f.p1 = p1
+                f.p2 = p2
+            } else {
+                const gap = 0.1
+                f.p1.x = p1.x + gap
+                f.p1.y = p1.y + gap
+                f.p2.x = (p1.x + p2.x) - gap
+                f.p2.y = (p1.y + p2.y) - gap
+            }
+            break
+
+        case 0x2ff5: // ⿵
+        if(part == 0) {
+            f.p1 = p1
+            f.p2 = p2
+        } else {
+            const gap = 0.1
+            f.p1.x = p1.x + gap
+            f.p1.y = p1.y + gap
+            f.p2.x = (p1.x + p2.x) - gap
+            f.p2.y = (p1.y + p2.y)
+        }
+        break
+
+        case 0x2ff6: // ⿶
+            if(part == 0) {
+                f.p1 = p1
+                f.p2 = p2
+            } else {
+                const gap = 0.1
+                f.p1.x = p1.x + gap
+                f.p1.y = p1.y
+                f.p2.x = (p1.x + p2.x) - gap
+                f.p2.y = (p1.y + p2.y) - gap
+            }
+            break
+
+        case 0x2ff7: // ⿷
+        if(part == 0) {
+            f.p1 = p1
+            f.p2 = p2
+        } else {
+            const gap = 0.1
+            f.p1.x = p1.x + gap
+            f.p1.y = p1.y + gap
+            f.p2.x = (p1.x + p2.x)
+            f.p2.y = (p1.y + p2.y) - gap
+        }
+        break
     }
     return f
 }

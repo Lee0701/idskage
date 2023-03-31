@@ -47,47 +47,46 @@ const autofit = (kage) => {
         })
     }
 
-    const fixPartFrames = (tree, pos, size) => {
+    const fixPartFrames = (tree, pos, size, i=0) => {
         const idc = tree.ch.codePointAt(0)
         const operands = getOperandByIDC(idc)
-        return new Array(operands).fill().flatMap((_ ,i) => {
-            const child = tree['p' + i]
-            const op = getOperandByIDC(child.ch.codePointAt(0))
-            if (op > 0) {
-                return fixPartFrames(child, pos, size)
-            } else {
-                const name = getKey(child.ch, idc, i)
-                const { minX, minY, maxX, maxY } = getBoundingBox(name, size)
-                const frame = child.frame
+        if(operands > 0) {
+            return new Array(operands).fill().flatMap((_, i) => {
+                const child = tree['p' + i]
+                return fixPartFrames(child, pos, size, i)
+            })
+        } else {
+            const name = getKey(tree.ch, idc, i)
+            const { minX, minY, maxX, maxY } = getBoundingBox(name, size)
+            const frame = tree.frame
 
-                // Offset
-                const lo = -minX
-                const ro = 1 - maxX
-                const to = -minY
-                const bo = 1 - maxY
-                
-                // Margin
-                const margin = 0.025
-                const lm = margin
-                const rm = margin
-                const tm = margin
-                const bm = margin
+            // Offset
+            const lo = -minX
+            const ro = 1 - maxX
+            const to = -minY
+            const bo = 1 - maxY
 
-                const x1 = (frame.p1.x + lo) + lm
-                const y1 = (frame.p1.y + to) + tm
-                const x2 = (frame.p2.x + ro) - rm
-                const y2 = (frame.p2.y + bo) - bm
+            // Margin
+            const margin = 0.025
+            const lm = margin
+            const rm = margin
+            const tm = margin
+            const bm = margin
 
-                const xr = x2 - x1
-                const yr = y2 - y1
-                const x = x1 * size.w
-                const y = y1 * size.h
-                const w = xr * size.w
-                const h = yr * size.h
+            const x1 = (frame.p1.x + lo) + lm
+            const y1 = (frame.p1.y + to) + tm
+            const x2 = (frame.p2.x + ro) - rm
+            const y2 = (frame.p2.y + bo) - bm
 
-                return [{ name, x, y, w, h }]
-            }
-        })
+            const xr = x2 - x1
+            const yr = y2 - y1
+            const x = x1 * size.w
+            const y = y1 * size.h
+            const w = xr * size.w
+            const h = yr * size.h
+
+            return [{ name, x, y, w, h }]
+        }
     }
     return fixPartFrames
 }
