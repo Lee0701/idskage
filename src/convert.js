@@ -1,12 +1,16 @@
 
 const fs = require('fs')
+const readline = require('readline')
 
 const inFile = process.argv[2]
 const outFile = process.argv[3]
 
-const data = fs.readFileSync(inFile, 'utf8').split('\n').slice(2)
-        .map((line) => line.split('|').map((entry) => entry.trim()))
-        .map(([name, related, data]) => [name, related, data].join('\t'))
-        .join('\n')
+fs.writeFileSync(outFile, '')
+const rl = readline.createInterface({input: fs.createReadStream(inFile)})
 
-fs.writeFileSync(outFile, data)
+let i = 0
+rl.on('line', (line) => {
+    if(i++ < 2) return
+    const [name, related, data] = line.split('|').map((e) => e.trim())
+    fs.appendFileSync(outFile, `${name}\t${data}\n`)
+})

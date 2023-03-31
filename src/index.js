@@ -8,12 +8,17 @@ const autofit = require('./autofit')
 const loadTsv = (file) => {
     const glypheme = Object.fromEntries(fs.readFileSync(file, 'utf8').split('\n')
             .map((line) => line.split('\t'))
-            .map(([name, related, data]) => [name, data]))
+            .filter((entry) => entry.length == 2)
+            .map(([name, data]) => [name, preprocessData(data)]))
     const decompose = {}
     return { glypheme, decompose }
 }
 const loadMock = () => {
     return require('./mockdata')
+}
+
+const preprocessData = (name) => {
+    return name.replace(/\@\d+/g, '')
 }
 
 const drawPNG = (outFile, polygons) => {
