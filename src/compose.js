@@ -8,7 +8,7 @@ yapcheahshen@gmail.com at MOEDICT 萌典松 2015/3/28
 const { fixedCharAt } = require('./utf16')
 const { getOperandByIDC, frameForIDC } = require('./idc')
 
-const compose = (glypheme, decompose) => {
+const compose = (kage) => {
 
     //全字框, 以小數表示。
     const fullFrame = function() {

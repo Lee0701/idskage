@@ -60,7 +60,7 @@ const main = () => {
     const kage = new Kage()
     const { glypheme, decompose } = (dict == 0) ? loadTsv('res/buhin.tsv') : loadMock()
     Object.entries(glypheme).forEach(([name, data]) => kage.kBuhin.push(name, data))
-    const buildTree = compose(glypheme, decompose)
+    const buildTree = compose(kage)
     const fixPartFrames = autofit(kage)
 
     const drawdgg = function(ids) {

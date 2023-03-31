@@ -9,10 +9,16 @@ const getOperandByIDC = function(idc) {
 
 const suffixForIDC = function(idc, part) {
     if(typeof idc === 'string') idc = idc.codePointAt(0)
-    if(idc == 0x2ff2 || idc == 0x2ff3) {
-        return (part < 2) ? '-01' : '-02'
-    } else if(idc == 0x2ff0 || idc <= 0x2ff1) {
+    if(idc == 0x2ff0) {
         return (part == 0) ? '-01' : '-02'
+    } else if(idc <= 0x2ff1) {
+        return (part == 0)? '-03' : '-04'
+    } else if(idc == 0x2ff2) {
+        return (part < 2) ? '-01' : '-02'
+    } else if(idc == 0x2ff3) {
+        return (part < 2)? '-03' : '-04'
+    } else if(idc >= 0x2ff4 && idc <= 0x2ffa) {
+        return (part == 0) ? '-05' : '-06'
     }
     return ''
 }
